@@ -17,8 +17,13 @@
 #include "http_config.h"
 #include "http_connection.h"
 #include "http_core.h"
+#include "http_log.h"
 #include "http_protocol.h"
 #include "http_request.h"
+
+#include "apr_strings.h"
+
+#include "mod_depends.h"
 
 module AP_MODULE_DECLARE_DATA depends_module;
 
@@ -37,7 +42,11 @@ APR_DECLARE(apr_status_t) depends_add_file(request_rec* r, const char* path)
     if(!conf) {
         conf = apr_array_make(r->pool, 3, sizeof(md_info*));
         ap_set_module_config(r->request_config, &depends_module, conf);
+        ap_add_output_filter_handle(depends_filter_handle, NULL, r, r->connection);
     }
+
+    ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
+                  "add file: %s", path);
 
     fp = apr_array_push(conf);
     fp->path = apr_pstrdup(r->pool, path);
@@ -81,15 +90,15 @@ static int depends_filter(ap_filter_t *f, apr_bucket_brigade *bb)
     apr_status_t rv;
     char *etag;
     char *next;
-    apr_time_t mtime;
-    apr_array_header_t* conf = ap_get_module_config(r->request_config, 
+
+    apr_array_header_t* conf = ap_get_module_config(f->r->request_config, 
                                              &depends_module);
     if(!conf) {
         ap_remove_output_filter(f);
         return ap_pass_brigade(f->next, bb);
     }
     
-    etag = apr_palloc(r->pool, weak_len + sizeof("\"--\"") +
+    etag = apr_palloc(f->r->pool, sizeof("\"--\"") +
                       conf->nelts * (3 * CHARS_PER_UNSIGNED_LONG + 1));
     next = etag;
 
@@ -98,22 +107,25 @@ static int depends_filter(ap_filter_t *f, apr_bucket_brigade *bb)
     while((fp = apr_array_pop(conf)) != NULL) {
         apr_finfo_t *finfo;
 
-        rv = apr_stat(finfo, fp->path, APR_FINFO_MTIME|APR_FINFO_INODE|APR_FINFO_SIZE, r->pool);
+        rv = apr_stat(finfo, fp->path, APR_FINFO_MTIME|APR_FINFO_INODE|APR_FINFO_SIZE, f->r->pool);
+
+        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, f->r,
+                  "stat file: %s", fp->path);
 
         if(rv != APR_SUCCESS)
             continue;
 
-        next = etag_ulong_to_hex(next, (unsigned long)finfo.inode);
+        next = etag_ulong_to_hex(next, (unsigned long)finfo->inode);
         *next++ = '-';
-        next = etag_ulong_to_hex(next, (unsigned long)finfo.size);
+        next = etag_ulong_to_hex(next, (unsigned long)finfo->size);
         *next++ = '-';
-        next = etag_ulong_to_hex(next, (unsigned long)finfo.mtime);
-        ap_update_mtime(r, finfo.mtime);
+        next = etag_ulong_to_hex(next, (unsigned long)finfo->mtime);
+        ap_update_mtime(f->r, finfo->mtime);
     }
     *next = '\0';
 
-    apr_table_setn(r->headers_out, "ETag", etag);
-    ap_set_last_modified(r);
+    apr_table_setn(f->r->headers_out, "ETag", etag);
+    ap_set_last_modified(f->r);
 
     ap_remove_output_filter(f);
     return ap_pass_brigade(f->next, bb);
