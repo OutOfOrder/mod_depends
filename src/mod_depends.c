@@ -98,8 +98,8 @@ static int depends_filter(ap_filter_t *f, apr_bucket_brigade *bb)
         return ap_pass_brigade(f->next, bb);
     }
     
-    etag = apr_palloc(f->r->pool, sizeof("\"--\"") +
-                      conf->nelts * (3 * CHARS_PER_UNSIGNED_LONG + 1));
+    etag = apr_palloc(f->r->pool, sizeof("\"\"") +
+                      conf->nelts * ( sizeof("--") + (3 * CHARS_PER_UNSIGNED_LONG + 1)));
     next = etag;
 
     *next++ = '"';
@@ -122,6 +122,7 @@ static int depends_filter(ap_filter_t *f, apr_bucket_brigade *bb)
         next = etag_ulong_to_hex(next, (unsigned long)finfo->mtime);
         ap_update_mtime(f->r, finfo->mtime);
     }
+    *next++ = '"';
     *next = '\0';
 
     apr_table_setn(f->r->headers_out, "ETag", etag);
