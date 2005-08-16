@@ -17,6 +17,7 @@
 #define _MOD_DEPENDS_H
 
 #include <httpd.h>
+#include <apr_optional.h>
 
 #ifdef __cplusplus
 extern "C" {
