@@ -22,7 +22,15 @@
 extern "C" {
 #endif
 
+APR_DECLARE_OPTIONAL_FN(apr_status_t, depends_add_file,
+                        (request_rec *r, const char* path));
+
+APR_DECLARE_OPTIONAL_FN(apr_status_t, depends_add_hash,
+                        (request_rec *r, const char* data, apr_size_t len));
+
 APR_DECLARE(apr_status_t) depends_add_file(request_rec* r, const char* path);
+APR_DECLARE(apr_status_t) depends_add_hash(request_rec* r, const char* data, 
+                          apr_size_t len);
 
 #ifdef __cplusplus
 }  
