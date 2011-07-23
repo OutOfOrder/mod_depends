@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="../../../../xsl/projects.xsl"?>
+<ooo title="mod_depends" path="/projects/apache/mod_depends/" osi="on">
+ <section title="Abstract">
+    <content>
+     <div xmlns="http://www.w3.org/1999/xhtml">
+       <code>mod_depends</code> is a filter module that allows other Apache 2 modules to
+       build up dependency information used to generate files such as <a href="../mod_transform">mod_transform</a>.
+       This depency information is then used to generate ETags to allow quick cache checking
+       of pages.
+     </div>
+    </content>
+ </section>
+
+ <requirements>
+  <title>Prerequisites</title>
+  <software name="Apache HTTPd" url="http://httpd.apache.org/">
+    <requirement version="2.0.40" type="minimum"/>
+  </software>
+ </requirements>
+
+ <changelog>
+
+ </changelog>
+
+ <downloads
+        name="mod_depends"
+        baseref="/downloads/mod_depends/"
+        extension="tar.gz">
+    <category>
+      <title>Repositories</title>
+      <repository type="git" name="httpd/mod_depends" baseref="http://git.outoforder.cc/" view="cgit"/>
+    </category>
+ </downloads>
+
+ <mailinglists spam="warning">
+    <content type="docbook">
+      <para>
+        There are two mailing lists for mod_depends. The first is the generic
+        announcement mailing list which provides announcements for all software releases
+        on OutOfOrder.cc, but can be filtered by choosing topics in the mailing list
+        options page. The second is the user mailing list.
+        Release announcements will be cross posted to both lists.
+      </para>
+    </content>
+    <list>
+      <mailinglist name="announce" type="mailman" host="lists.outoforder.cc"/>
+      <mailinglist name="modules" type="mailman" host="lists.outoforder.cc"/>
+    </list>
+ </mailinglists>
+
+  <section position="bottom">
+    <title>Contact &amp; Help</title>
+    <content type="docbook">
+      <para>
+        <ulink url="/email/?Subject=mod_depends">E-Mail us</ulink>, about mod_depends.
+      </para>
+      <para>
+        Send an e-mail to the <link linkend="mailinglist">mod_transform mailing list</link>.
+      </para>
+      <para>
+        Bugs should be reported to the <ulink url="http://bugs.outoforder.cc">OutOfOrder.cc Bug Tracker</ulink>.
+      </para>
+    </content>
+  </section>
+</ooo>
