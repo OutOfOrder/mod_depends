@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="../../../../xsl/projects.xsl"?>
-<ooo title="mod_depends" path="/projects/apache/mod_depends/" osi="on">
+<ooo title="mod_depends" path="/projects/httpd/mod_depends/" osi="on">
  <section title="Abstract">
     <content>
      <div xmlns="http://www.w3.org/1999/xhtml">
